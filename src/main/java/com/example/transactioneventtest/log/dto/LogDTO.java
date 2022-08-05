@@ -1,12 +1,9 @@
 package com.example.transactioneventtest.log.dto;
 
 import com.example.transactioneventtest.log.domain.Log;
-import com.example.transactioneventtest.order.domain.Order;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Column;
 
 @Getter
 @NoArgsConstructor

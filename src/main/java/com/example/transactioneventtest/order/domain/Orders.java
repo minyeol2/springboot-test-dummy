@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Table(name = "ORDERS")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Order {
+public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
@@ -27,7 +27,7 @@ public class Order {
     private String remark;
 
     @Builder
-    public Order(Long id, Long orderItemId, Integer orderQuantity, String remark) {
+    public Orders(Long id, Long orderItemId, Integer orderQuantity, String remark) {
         this.id = id;
         this.orderItemId = orderItemId;
         this.orderQuantity = orderQuantity;

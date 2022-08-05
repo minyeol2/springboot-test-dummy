@@ -1,6 +1,6 @@
 package com.example.transactioneventtest.order.dto;
 
-import com.example.transactioneventtest.order.domain.Order;
+import com.example.transactioneventtest.order.domain.Orders;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,8 +25,8 @@ public class OrderDTO {
         this.remark = remark;
     }
 
-    public Order toEntity() {
-        return Order.builder()
+    public Orders toEntity() {
+        return Orders.builder()
                 .orderItemId(this.orderItemId)
                 .orderQuantity(this.orderQuantity)
                 .remark(this.remark)

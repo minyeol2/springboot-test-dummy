@@ -39,7 +39,7 @@ public class OrderApi {
                 break;
             default: break;
         }
-        log.info("[ThreadID={}]",Thread.currentThread() + " : Order controller 종료(Write Response)");
+        log.info("[ThreadID={}]",Thread.currentThread().getId() + " : Order controller 종료(Write Response)");
         return ResponseEntity.ok().body("done");
     }
 

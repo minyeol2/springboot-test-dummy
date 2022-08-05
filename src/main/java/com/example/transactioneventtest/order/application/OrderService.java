@@ -3,7 +3,7 @@ package com.example.transactioneventtest.order.application;
 import com.example.transactioneventtest.log.application.event.*;
 
 import com.example.transactioneventtest.log.dto.LogDTO;
-import com.example.transactioneventtest.order.domain.Order;
+import com.example.transactioneventtest.order.domain.Orders;
 import com.example.transactioneventtest.order.dto.OrderDTO;
 import com.example.transactioneventtest.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static com.example.transactioneventtest.SpringbootTestDummyApplication.throwNPE;
 
 @Slf4j
 @Service
@@ -29,13 +31,13 @@ public class OrderService {
         Thread mainThread = Thread.currentThread();
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 주문완료 메서드 실행");
 
-        Order order = this.getOrderDTO().toEntity();
-        orderRepository.save(order);
+        Orders orders = this.getOrderDTO().toEntity();
+        orderRepository.save(orders);
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 주문 저장 완료");
         //throwNPE("OrderService에서 강제발생");
 
-        String logMessage = String.format("주문상품 : [%d], 주문수량 : [%d],  비고내용 : [%s]",order.getOrderItemId(), order.getOrderQuantity(), order.getRemark());
-        LogDTO logDTO = LogDTO.builder().referenceId(order.getId()).tableName("ORDERS").logMessage(logMessage).build();
+        String logMessage = String.format("주문상품 : [%d], 주문수량 : [%d],  비고내용 : [%s]", orders.getOrderItemId(), orders.getOrderQuantity(), orders.getRemark());
+        LogDTO logDTO = LogDTO.builder().referenceId(orders.getId()).tableName("ORDERS").logMessage(logMessage).build();
 
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 Log등록 이벤트 발행");
         eventPublisher.publishEvent(
@@ -51,15 +53,15 @@ public class OrderService {
         Thread mainThread = Thread.currentThread();
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 주문완료 메서드 실행");
 
-        Order order = this.getOrderDTO().toEntity();
-        orderRepository.save(order);
+        Orders orders = this.getOrderDTO().toEntity();
+        orderRepository.save(orders);
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 주문 저장 완료");
         //throwNPE("OrderService에서 강제발생")
 
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 Log등록 이벤트 발행");
         eventPublisher.publishEvent(
                 LogRegisterAsyncEvent.builder()
-                        .referencdId(order.getId())
+                        .referencdId(orders.getId())
                         .build()
         );
 
@@ -72,15 +74,15 @@ public class OrderService {
         Thread mainThread = Thread.currentThread();
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 주문완료 메서드 실행");
 
-        Order order = this.getOrderDTO().toEntity();
-        orderRepository.save(order);
+        Orders orders = this.getOrderDTO().toEntity();
+        orderRepository.save(orders);
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 주문 저장 완료");
         //throwNPE("OrderService에서 강제발생");
 
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 Log등록 이벤트 발행");
         eventPublisher.publishEvent(
                 LogRegisterSyncTranEvent.builder()
-                        .referencdId(order.getId())
+                        .referencdId(orders.getId())
                         .build()
         );
         //Thread.sleep(3000);
@@ -92,15 +94,15 @@ public class OrderService {
         Thread mainThread = Thread.currentThread();
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 주문완료 메서드 실행");
 
-        Order order = this.getOrderDTO().toEntity();
-        orderRepository.save(order);
+        Orders orders = this.getOrderDTO().toEntity();
+        orderRepository.save(orders);
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 주문 저장 완료");
         //throwNPE("OrderService에서 강제발생");
 
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 Log등록 이벤트 발행");
         eventPublisher.publishEvent(
                 LogRegisterAsyncTranEvent.builder()
-                        .referencdId(order.getId())
+                        .referencdId(orders.getId())
                         .build()
         );
 
@@ -116,8 +118,8 @@ public class OrderService {
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 Log등록 이벤트 발행");
         eventPublisher.publishEvent(new LogRegisterBeforeCommitEvent());
 
-        Order order = this.getOrderDTO().toEntity();
-        orderRepository.save(order);
+        Orders orders = this.getOrderDTO().toEntity();
+        orderRepository.save(orders);
         log.info("[ThreadID={}]",mainThread.getId() + " : Order서비스 주문 저장 완료");
 
         //Thread.sleep(3000);
