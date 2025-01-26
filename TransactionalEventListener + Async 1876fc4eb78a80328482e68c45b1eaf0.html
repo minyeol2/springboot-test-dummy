@@ -1,0 +1,805 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>TransactionalEventListener + Async</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-default_background {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(0, 0, 0, 0.06); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="1876fc4e-b78a-8032-8482-e68c45b1eaf0" class="page sans"><header><h1 class="page-title">TransactionalEventListener + Async</h1><p class="page-description"></p></header><div class="page-body"><h2 id="1876fc4e-b78a-80dd-b088-eaa7db071b16" class="">이 글의 목적!</h2><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1876fc4e-b78a-80bc-b709-fe8102ee99e8"><div style="font-size:1.5em"><span class="icon">🤔</span></div><div style="width:100%">WMS는 도메인이 다를 경우 내부 이벤트로 로직을 관리하고 있습니다.<br/><br/>Spring환경에서 @EventListener를 사용하여 이벤트 기반 프로그래밍을 할 경우<br/>두 서비스 객체간의 결합도를 낮춰주기 때문에 협업 개발시에 동시 테스트가 용이해지며, <br/>서비스 운영중에 필연적으로 발생하는 비즈니스 로직 변경사항에 대해서도 <br/>두 서비스 객체는 서로 영향을 받지 않기 때문에 유지보수와 운영 측면에서도 상당한 강점을 보입니다.<br/><br/><br/><mark class="highlight-orange"><strong>단! Event Driven 방식으로 개발을 하다보면 고민해야 할 부분이 생깁니다.</strong></mark><br/>     1) 두 서비스가 하나의 트랜잭션으로 엮여야 할 경우<br/>     2) 서로의 트랜잭션에 관여하지 않아야 하는 경우<br/>     3) 이벤트 호출시 수행되는 서비스가 비동기로 호출되면 효율적인 경우<br/>   …<br/><br/>위와 같이 요구하는 비즈니스에 따라 다양한 케이스들이 존재합니다.<br/><br/><mark class="highlight-orange"><strong>이에 맞춰 Spring에서는 다양한 형태의 Event 관련 Annotation 조합(!?)을 제공</strong></mark>하는데, <br/>빠른 업무템포 속에서 어떤 상황에서 어떤 방식을 적용해야할지 쉽게 결정하지 못합니다.<br/><br/>필자 역시도 Spring Event를 처음 접하는 상황에서 단지 구글링과 다른 블로거의<br/>글만을 참조하여 개발하였는데, 실제로 잘못된 정보가 등재된 글도 상당히 많습니다…😂<br/><br/>그래서…<br/>언급한 많은 케이스들에 대해 직접 테스트해보고, <br/>그 결과로서 <br/><mark class="highlight-orange"><strong>정확한 정보를 공유 </strong></mark>드리고자 이 글을 작성합니다.<p id="1876fc4e-b78a-8093-a38e-e503c175f877" class=""><br/><br/><em><mark class="highlight-blue">테스트 코드 VCS(테스트용으로 사용하셔도 좋을 듯 합니다.)</mark></em><br/><br/><a href="https://github.com/minyeol2/springboot-test-dummy">https://github.com/minyeol2/springboot-test-dummy</a></p></div></figure><p id="1876fc4e-b78a-80a5-9d98-f5ce248a3ab1" class="">
+</p><h2 id="1876fc4e-b78a-80d0-ae4d-c9591140a178" class="">기본 시나리오</h2><ol type="1" id="1876fc4e-b78a-8053-9120-ec448649b8ec" class="numbered-list" start="1"><li>주문(Orders)테이블과 로그(Log)테이블이 존재합니다.</li></ol><ol type="1" id="1876fc4e-b78a-8004-9c6a-fb16b1494334" class="numbered-list" start="2"><li>주문이 발생하면 주문정보를 Orders테이블에 Insert합니다.</li></ol><ol type="1" id="1876fc4e-b78a-8041-8b95-d7fe4563a822" class="numbered-list" start="3"><li>주문등록이 완료되면 Log테이블에 관련 정보를 Insert 합니다.(event)</li></ol><h2 id="1876fc4e-b78a-80bb-a10e-fb811c5b248d" class="">도메인</h2><ul id="1876fc4e-b78a-80fa-91c6-d7c90f331e37" class="bulleted-list"><li style="list-style-type:disc">Orders(주문)</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-8042-a84b-f2554c79d5c1" class="code"><code class="language-Java" style="white-space:pre-wrap;word-break:break-all">@Entity
+@Table(name = &quot;ORDERS&quot;)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class Orders {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;id&quot;, updatable = false)
+    private Long id;
+
+    @Column(name = &quot;order_item_id&quot;)
+    private Long orderItemId;
+
+    @Column(name = &quot;order_quantity&quot;)
+    private Integer orderQuantity;
+
+    @Column(name = &quot;remark&quot;)
+    private String remark;
+
+    @Builder
+     ...
+}</code></pre><ul id="1876fc4e-b78a-808e-9676-e00edbb91d21" class="bulleted-list"><li style="list-style-type:disc">Log(로그)</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-80ac-b93c-deb260ddd68a" class="code"><code class="language-Java" style="white-space:pre-wrap;word-break:break-all">@Entity
+@Table(name = &quot;LOG&quot;)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Log {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;id&quot;, updatable = false)
+    private Long id;
+
+    @Column(name = &quot;reference_id&quot;)
+    private Long referenceId;
+
+    @Column(name = &quot;table_name&quot;)
+    private String tableName;
+
+    @Column(name = &quot;log_message&quot;)
+    private String logMessage;
+
+    @Builder
+    ....
+}</code></pre><h2 id="1876fc4e-b78a-808f-bf04-ca83c6f3b8e3" class="">서비스</h2><ul id="1876fc4e-b78a-8069-a7a3-e0b5162dc687" class="bulleted-list"><li style="list-style-type:disc"><code>order</code> &gt; OrderService.java</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-8041-8097-cf842507c95c" class="code"><code class="language-Java" style="white-space:pre-wrap;word-break:break-all">@Transactional
+public void completeOrder(OrderDTO dto) {
+  Thread mainThread = Thread.currentThread();
+  log.info(&quot;[ThreadID={}]&quot;,mainThread.getId() + &quot; : Order서비스 주문완료 메서드 실행&quot;);
+
+  Orders orders = dto.toEntity();
+  orderRepository.save(orders);
+  log.info(&quot;[ThreadID={}]&quot;,mainThread.getId() + &quot; : Order서비스 주문 저장 완료&quot;);
+
+
+  String logMessage = ...;
+  LogDTO logDTO = LogDTO.builder()....
+
+  log.info(&quot;[ThreadID={}]&quot;,mainThread.getId() + &quot; : Order서비스 Log등록 이벤트 발행&quot;);
+  eventPublisher.publishEvent(
+          LogRegisterEvent.builder()
+				                  .logDTO(logDTO)
+				                  .build()
+  );
+	
+  log.info(&quot;[ThreadID={}]&quot;,mainThread.getId() + &quot; : Order서비스 주문완료 메서드 종료&quot;);
+}</code></pre><ul id="1876fc4e-b78a-800d-86fb-db179a3742ae" class="bulleted-list"><li style="list-style-type:disc"><code>log</code> &gt; LogService.java</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-80dc-8c8c-f4fe63dfcde5" class="code"><code class="language-Java" style="white-space:pre-wrap;word-break:break-all">@Transactional
+public void registerLog(LogDTO logDTO) {
+    Thread mainThread = Thread.currentThread();
+    log.info(&quot;[ThreadID={}]&quot;,mainThread.getId() + &quot; : Log서비스 로그저장 메서드 실행&quot;);
+
+    Log logs = logDTO.toEntity();
+    logRepository.save(logs);
+
+    log.info(&quot;[ThreadID={}]&quot;,mainThread.getId() + &quot; : Log서비스 로그저장 메서드 종료&quot;);
+}</code></pre><p id="1876fc4e-b78a-80f7-a158-ec7602898775" class="">  👉Thread.currentThread().getId() : 현재 실행중인 스레드 ID (Async 테스트용)</p><p id="1876fc4e-b78a-800e-853f-db05e40ffecd" class="">
+</p><h2 id="1876fc4e-b78a-80bd-ac3f-dfad5291de38" class="">프로세스</h2><ol type="1" id="1876fc4e-b78a-80e2-baea-e56f9114f29c" class="numbered-list" start="1"><li>OrderAPI(RestController)에 주문생성 요청</li></ol><ol type="1" id="1876fc4e-b78a-803f-9850-c15e8a6691ec" class="numbered-list" start="2"><li>OrderService.completeOrder() 실행 : 주문저장</li></ol><ol type="1" id="1876fc4e-b78a-8095-9362-daa684302a1f" class="numbered-list" start="3"><li>eventPublisher.publishEvent를 통해 로그등록 이벤트 발행</li></ol><ol type="1" id="1876fc4e-b78a-80c8-9ca4-d94664be7fc5" class="block-color-orange_background numbered-list" start="4"><li><mark class="highlight-orange_background">LogEventListner 이벤트 수신 :  </mark><code>@EventListener</code><mark class="highlight-orange_background"> or </mark><code>@TransactionalEventListener</code><mark class="highlight-orange_background"> or with </mark><code>@Async</code></li></ol><ol type="1" id="1876fc4e-b78a-8041-8342-fe6e2b723e04" class="numbered-list" start="5"><li>LogService.registerLog() 실행 : 로그저장</li></ol><p id="1876fc4e-b78a-8041-980e-c010440fe953" class="">
+</p><p id="1876fc4e-b78a-8024-97dd-d6e941a78fa1" class="">✅ 본격적으로 테스트 할 내용은 프로세스상 4번에 해당하는 리스너의 어노테이션 조합 테스트입니다.</p><ul id="1876fc4e-b78a-8060-96e0-f7a271b8d48b" class="toggle"><li><details open=""><summary>테스트 목록</summary><ol type="1" id="1876fc4e-b78a-803a-8faa-dcf0b092318b" class="numbered-list" start="1"><li><code>@EventListener</code></li></ol><ol type="1" id="1876fc4e-b78a-80ba-9e64-fcd1596d97b0" class="numbered-list" start="2"><li><code>@EventListener</code> + <code>@Async</code></li></ol><ol type="1" id="1876fc4e-b78a-809e-8841-e3b72036356c" class="numbered-list" start="3"><li><code>@TransactionalEventListener</code></li></ol><ol type="1" id="1876fc4e-b78a-8092-a116-c3942926fcf6" class="numbered-list" start="4"><li><code>@TransactionalEventListener</code> + <code>@Async</code></li></ol></details></li></ul><h2 id="1876fc4e-b78a-8028-a56f-e729db9ba901" class="">👨🏻‍🔬 테스트 1  </h2><ul id="1876fc4e-b78a-807b-b20f-f93d345f069d" class="toggle"><li><details open=""><summary><code>@EventListener</code> 만 사용하는 경우</summary><ul id="1876fc4e-b78a-80a3-9d10-d23dec485c3b" class="bulleted-list"><li style="list-style-type:disc"><code>log</code> &gt; LogEventListener.java</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-806f-b9a5-e2d21b297901" class="code"><code class="language-Java">@EventListener
+public void registerLog(LogDTO logDTO) {
+    logService.registerLog(event.getLogDTO());
+}</code></pre><p id="1876fc4e-b78a-8069-bb97-f430fd2eb84f" class=""><strong> ▶️ 실행결과</strong></p><figure id="1876fc4e-b78a-8083-964c-d7585a0dc243" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled.png"><img style="width:815.998291015625px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled.png"/></a></figure><p id="1876fc4e-b78a-8008-9095-f0ce0aa9d6fd" class=""><strong>🔍 DB저장 결과</strong></p><figure id="1876fc4e-b78a-8031-9b4a-d0747199b2eb" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%201.png"><img style="width:816.0069580078125px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%201.png"/></a></figure><p id="1876fc4e-b78a-802f-a52d-c4b46a3fdcbe" class="">
+</p><ul id="1876fc4e-b78a-8084-a5da-db87d84cdf58" class="bulleted-list"><li style="list-style-type:disc">로그를 보면 알 수 있듯이 동일 쓰레드로 동기적으로 처리됩니다.</li></ul><ul id="1876fc4e-b78a-8066-8932-f7d18cb0d9cc" class="bulleted-list"><li style="list-style-type:disc">publishEvent()하는 순간 바로 이벤트가 실행되고 이벤트 종료까지 호출 서비스는 blocking 됩니다.</li></ul><p id="1876fc4e-b78a-80e4-a67c-eb0c0e639333" class="">
+</p><h3 id="1876fc4e-b78a-803d-b698-ff969dc95d42" class="">🤔 만약 주문을 저장할 때 혹은 로그를 저장할 때 에러가 난다면?</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-804f-a62d-f803d00813d3" class="code"><code class="language-Java" style="white-space:pre-wrap;word-break:break-all">if(1==1)throw new NullPointerException(&quot;OrderService에서 강제발생&quot;);
+
+if(1==1)throw new NullPointerException(&quot;LogService에서 강제발생&quot;);</code></pre><ul id="1876fc4e-b78a-8098-bd31-d0723ff1d026" class="bulleted-list"><li style="list-style-type:disc">위와 같이 주문서비스, 로그서비스 중간에 에러를 발생시켜 롤백 테스트를 진행합니다.</li></ul><p id="1876fc4e-b78a-804f-bf30-eb468e010258" class="">
+</p><p id="1876fc4e-b78a-800a-b8ef-ef22b88fed96" class=""><strong> ▶️ 실행결과 (주문 생성시 에러)</strong></p><figure id="1876fc4e-b78a-8072-96d8-eaaf77285e50" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%202.png"><img style="width:2404px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%202.png"/></a></figure><p id="1876fc4e-b78a-80b3-9302-e687b9ed116d" class=""><strong> ▶️ 실행결과 (로그 생성시 에러)</strong></p><figure id="1876fc4e-b78a-8086-9cde-de085fa9e48e" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%203.png"><img style="width:2386px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%203.png"/></a></figure><p id="1876fc4e-b78a-800a-97e3-e3120cc6515b" class=""><strong>🔍 DB저장 결과 (둘다 동일)</strong></p><figure id="1876fc4e-b78a-8003-80ff-f16075659b18" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%204.png"><img style="width:432px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%204.png"/></a></figure><ul id="1876fc4e-b78a-800e-8da6-cb0949c932ca" class="bulleted-list"><li style="list-style-type:disc">어느정도 예상하셨겠지만 동일 스레드로 동작하기 때문에 어느부분에서 에러가 나든 모두 롤백됩니다.</li></ul><p id="1876fc4e-b78a-8060-a16f-c4bbe6426f1d" class="">
+</p><h2 id="1876fc4e-b78a-80a2-96f9-fa59d6a43b87" class="">🎯 테스트1 결과 정리</h2><ul id="1876fc4e-b78a-8042-95a4-c0e5c8edd83f" class="bulleted-list"><li style="list-style-type:disc"><code>@EventListener</code>만 사용할 경우 동일 스레드로 동작합니다.</li></ul><ul id="1876fc4e-b78a-80d7-9297-e3e9b0105279" class="bulleted-list"><li style="list-style-type:disc">때문에 최초 <code>@Transactional</code>이 선언된 서비스에 모든 하위 트랜잭션이 종속됩니다.</li></ul><ul id="1876fc4e-b78a-80a0-b53d-f47d86ba10de" class="bulleted-list"><li style="list-style-type:disc">본 시나리오 상에서 의미를 찾자면, <mark class="highlight-blue_background"><strong>[로그 테이블 기록시 에러가 나면 주문완료도 롤백 되어야한다]</strong></mark>라는 가정하에 사용될 수 있는 어노테이션 입니다.</li></ul><ul id="1876fc4e-b78a-80ad-98d5-d17cba8fe186" class="bulleted-list"><li style="list-style-type:disc">실전 적용 사례로는 <mark class="highlight-blue"><strong>본 서비스와 이벤트 수신 시 실행되는 서비스가 같은 트랜잭션으로 엮여야 할 때</strong></mark> 사용하시면 됩니다.</li></ul></details></li></ul><p id="1876fc4e-b78a-80d9-837f-c20186fcc449" class="">
+</p><h2 id="1876fc4e-b78a-80e9-99ec-f5c513ab49be" class="">👨🏻‍🔬 테스트 2  </h2><ul id="1876fc4e-b78a-801a-b8e9-d5513c621968" class="toggle"><li><details open=""><summary><code>@EventListener</code> + <code>@Async</code> 사용하는 경우</summary><ul id="1876fc4e-b78a-80e0-ba47-fd3c18cb7d2d" class="bulleted-list"><li style="list-style-type:disc"><code>log</code> &gt; LogEventListener.java</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-802a-9c72-d4fcec92307c" class="code"><code class="language-Java">@Async
+@EventListener
+public void registerLog(LogDTO logDTO) {
+    logService.registerLog(event.getLogDTO());
+}</code></pre><p id="1876fc4e-b78a-800a-b09f-c10381f9d632" class=""><strong> ▶️ 실행결과(1차시도)</strong></p><figure id="1876fc4e-b78a-80cd-9d40-d49df7e91f77" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%205.png"><img style="width:604.953125px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%205.png"/></a></figure><p id="1876fc4e-b78a-808c-a323-d733d73f9047" class=""><mark class="highlight-orange">⁉️ 동일 쓰레드에 동기처리가 되네?</mark></p><p id="1876fc4e-b78a-80fd-ae99-ce725f53d525" class="">👉 기본적으로 <code>@Async</code>를 사용하기 위해서는 Spring Application에게 비동기 메소드 <br/>      사용여부를 직접적으로 알려줘야 동작합니다.  <br/>      아래와 같이  스프링부트 메인 클래스에 <br/><code>@EnableAsync</code>를 붙이면 동작합니다.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-8020-89ba-d4970f021684" class="code"><code class="language-Java">@EnableAsync
+@SpringBootApplication
+public class SpringbootTestDummyApplication {
+			...
+}</code></pre><p id="1876fc4e-b78a-8080-86ed-fdfc9e6c52ca" class="">‼️ 단!! 이렇게만 설정하게 될 경우 스프링은 <code>SimpleAsyncTaskExecutor</code>를 기본적으로 <br/>      Executor Bean으로 등록하여 사용하게 되는데 해당 Bean은 매 비동기 요청마다 <br/>      매번 새로운 Thread를 생성하고, 사용이 끝나면 해당 Thread를 버립니다. <br/>      애초에 스레드 생성에 소요되는 시스템 자원 소모량은 막대하기 때문에 <br/>      보통의 경우 스레드풀을 설정하여 사용하게 되는데, <br/>      Spring에서도 Async 사용 시 별도의 스레드풀을 Configuration해서 사용합니다.<br/><br/><mark class="highlight-blue"><strong>    </strong></mark><mark class="highlight-blue"><strong><a href="https://velog.io/@gillog/Spring-Async-Annotation%EB%B9%84%EB%8F%99%EA%B8%B0-%EB%A9%94%EC%86%8C%EB%93%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0"> (</a></strong></mark><em><mark class="highlight-blue"><strong><a href="https://velog.io/@gillog/Spring-Async-Annotation%EB%B9%84%EB%8F%99%EA%B8%B0-%EB%A9%94%EC%86%8C%EB%93%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0">@Async 잘 정리된 블로그) </a></strong></mark></em><em><mark class="highlight-blue"><strong> <br/><br/></strong></mark></em><mark class="highlight-blue"><strong>    </strong></mark><mark class="highlight-blue"><strong><a href="https://velog.io/@gillog/Spring-Async-Annotation%EB%B9%84%EB%8F%99%EA%B8%B0-%EB%A9%94%EC%86%8C%EB%93%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0"> (</a></strong></mark><em><mark class="highlight-blue"><strong><a href="https://www.youtube.com/watch?v=HKlUvCv9hvA">@Async 사용시 주의사항과 개념에 대해 잘 설명한 영상) - 강추영상입니다.  </a></strong></mark></em></p><p id="1876fc4e-b78a-80b8-be93-c3958cf3fbd5" class="">
+</p><p id="1876fc4e-b78a-80ee-afe5-fd7ad863bd32" class=""><em><mark class="highlight-gray_background"><strong>👀 또 다른 세계로 이어지기전에… 이유를 알았으니 본 주제로 돌아와 Fix 후 다시 돌려봅니다.</strong></mark></em></p><p id="1876fc4e-b78a-807f-abb7-c2e639d35630" class="">
+</p><p id="1876fc4e-b78a-80c5-8443-d8ed59619ca4" class=""><strong> ▶️ 실행결과(2차시도)</strong></p><figure id="1876fc4e-b78a-80a6-9c0f-e882f522702d" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%206.png"><img style="width:605px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%206.png"/></a></figure><p id="1876fc4e-b78a-80b9-84f2-e7132c2f4eff" class=""><strong>🔍 DB저장 결과</strong></p><figure id="1876fc4e-b78a-80b9-a689-e67f0fef7d61" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%201.png"><img style="width:604.984375px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%201.png"/></a></figure><p id="1876fc4e-b78a-805b-994d-db888cdc5718" class="">
+</p><ul id="1876fc4e-b78a-80b5-8815-d341aa400fa6" class="bulleted-list"><li style="list-style-type:disc">로그를 보면 알 수 있듯이 이벤트 수행은 다른 스레드가 발행되어 처리합니다.</li></ul><ul id="1876fc4e-b78a-8020-ae89-d52b2e7fb1e8" class="bulleted-list"><li style="list-style-type:disc"><code>@EventListener</code>를 사용하였기 때문에 역시나 이벤트를 발행하는 순간 이벤트가 실행되지만, 다른 비동기 스레드이기 때문에 호출 서비스를 Blocking 하지 않습니다.</li></ul><ul id="1876fc4e-b78a-804b-bd30-d49136c7c38a" class="bulleted-list"><li style="list-style-type:disc">때문에 로그 서비스 이벤트가 종료되기도 전에 컨트롤러는 Response를 응답합니다.</li></ul><ul id="1876fc4e-b78a-8023-97cc-f2f3d47a8c2c" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-gray_background"><span style="border-bottom:0.05em solid">로그상으로는 API응답이 완료된 후 이벤트가 실행되는것 처럼 보이나, <br/>사실 이벤트를 발행하는 순간에 다른 쓰레드로 동시에 실행되는 것이고, <br/>단지 메소드 호출에 걸리는 시간이 소요되니 Order쪽에 로그가 먼저 찍혔을 뿐입니다.<br/></span></mark></li></ul><p id="1876fc4e-b78a-8030-9fa2-f0d842b1c535" class="">
+</p><h3 id="1876fc4e-b78a-806c-aabe-cff1f0265f26" class="">🤔 역시나 롤백 테스트를 해봐야겠죠? 이번엔 로그 쪽에서만 에러를 발생시켜 봅니다.</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-8075-92cd-c9a2cee1b636" class="code"><code class="language-Java" style="white-space:pre-wrap;word-break:break-all">if(1==1)throw new NullPointerException(&quot;LogService에서 강제발생&quot;);</code></pre><ul id="1876fc4e-b78a-809e-bcd6-f8bd414c7363" class="bulleted-list"><li style="list-style-type:disc">주문쪽에 에러테스트는 굳이 할 필요가 없습니다. (이벤트를 호출하기도 전에 에러가 생기니깐!)</li></ul><p id="1876fc4e-b78a-8048-982b-c88974528251" class="">
+</p><p id="1876fc4e-b78a-804c-aa1d-f166a77de071" class=""><strong> ▶️ 실행결과 (로그 생성시 에러)</strong></p><figure id="1876fc4e-b78a-80bf-9d50-d6078e96f370" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%207.png"><img style="width:2516px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%207.png"/></a></figure><p id="1876fc4e-b78a-80a3-8613-e398d77dd9f2" class=""><strong>🔍 DB저장 결과</strong></p><figure id="1876fc4e-b78a-8009-aad8-cb68d414f557" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%208.png"><img style="width:384px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%208.png"/></a></figure><p id="1876fc4e-b78a-801d-8896-cef1449368e0" class=""><strong>🔍 API 결과</strong></p><figure id="1876fc4e-b78a-80cc-9a6f-cec34df3906d" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%209.png"><img style="width:336px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%209.png"/></a></figure><ul id="1876fc4e-b78a-8020-b695-c4be54ca06bc" class="bulleted-list"><li style="list-style-type:disc">로그 등록에서 에러가 발생하였지만 주문은 롤백되지 않았습니다.</li></ul><ul id="1876fc4e-b78a-80d4-85c4-e2d77f642b30" class="bulleted-list"><li style="list-style-type:disc">주목할점은 별다른 예외처리가 없었는데, API Response는 Success를 응답합니다.</li></ul><h2 id="1876fc4e-b78a-80af-8336-f3b53791b3ea" class="">🎯 테스트2 결과 정리</h2><ul id="1876fc4e-b78a-8084-aa70-d5eac1194438" class="bulleted-list"><li style="list-style-type:disc"><code>@EventListener</code>에 <code>@Async</code>를 조합하여 사용할 경우 이벤트 처리는 다른 스레드로 동작합니다.</li></ul><ul id="1876fc4e-b78a-80a0-b9a2-dee3eb1a5b76" class="bulleted-list"><li style="list-style-type:disc">스레드가 분리되어 있기 때문에 각각의 트랜잭션 역시 서로 완전히 분리되어 있습니다.</li></ul><ul id="1876fc4e-b78a-8086-be57-c36475c0eaee" class="bulleted-list"><li style="list-style-type:disc">본 시나리오 상에서 의미를 찾자면, <mark class="highlight-blue_background"><strong>[로그 테이블 기록시 에러가 나더라도 주문완료는 보존되어야 한다.]</strong></mark>라는 가정하에 사용될 수 있는 어노테이션 입니다.</li></ul><ul id="1876fc4e-b78a-80b5-a704-f3daa51bd425" class="bulleted-list"><li style="list-style-type:disc">‼️ 주의할 점은 해당 시나리오에서는 운이 좋게 사용용도가 맞아 떨어졌지만 <mark class="highlight-red"><strong>대부분의 실무의 경우, 두가지 어노테이션을 조합하는건 위험</strong></mark>합니다.  <br/><br/>사실상 <br/><mark class="highlight-blue_background"><strong>[로그 테이블 기록시 에러가 나더라도 주문완료는 보존되어야 한다.] </strong></mark>라는 뜻 자체가 <br/>주문생성이 완벽히 저장 되었을때 로그 테이블에 Insert를 시도해야합니다.<br/><br/><br/><mark class="highlight-orange"><strong>가정 1)</strong></mark><mark class="highlight-orange"> </mark><em>만약 OrderService에서 로그등록 이벤트를 발행하고 난 뒤에 추가 로직이 있었더라면?<br/>근데 그 추가적인 로직에서 에러가 났었더라면?<br/></em><mark class="highlight-orange"><br/><br/><br/></mark><mark class="highlight-orange"><strong>가정 2)</strong></mark><mark class="highlight-orange"> </mark><em>혹은 Logservice에서 LogDTO를 매개변수로 받는것이 아닌, OrderId만을 전달받아<br/>DB에서 주문정보를 Select해와서 Log에 등록을 하는것이라면!? <br/></em><br/><br/>두 가지 상황 모두 실무에서 충분히 있을법한 케이스입니다.<br/><br/><br/><strong>가정 1)</strong>의 경우, 주문 정보는 롤백되고 로그 테이블은 기록됩니다.<br/><br/><strong>가정 2)</strong>의 경우, 전달받은 OrderId로 주문정보를 Select 했을때 주문정보가 없을 수도 있습니다.(OrderService내에서 이벤트 전파 후 추가적인 로직에서 시간이 다소 소요된다면 커밋전이기 때문)<br/><br/><mark class="highlight-gray">[</mark><em><mark class="highlight-gray">참고로 두 가지 가정 모두 테스트 완료했으나 스크린샷은 생략합니다.]</mark></em></li></ul><ul id="1876fc4e-b78a-8054-8570-f653b76f9d93" class="bulleted-list"><li style="list-style-type:disc">이러한 상황들을 방지하고자 Spring에서는 <code>@TransactionalEventListener</code>를 제공합니다.</li></ul></details></li></ul><p id="1876fc4e-b78a-8035-adbf-d099a1a63ac1" class="">
+</p><h2 id="1876fc4e-b78a-8050-82e5-f110a00b5a04" class="">👨🏻‍🔬 테스트 3 </h2><ul id="1876fc4e-b78a-8033-aa78-fde2e33f3788" class="toggle"><li><details open=""><summary><code>@TransactionalEventListener</code> 만 사용하는 경우</summary><ul id="1876fc4e-b78a-8066-80f7-c3e0c373e20a" class="bulleted-list"><li style="list-style-type:disc"><code>log</code> &gt; LogEventListener.java </li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-8087-8205-ee3fa665ed6e" class="code"><code class="language-Java">@TransactionalEventListener(phase = AFTER_COMMIT)
+public void registerLog(LogDTO logDTO) {
+    logService.registerLog(event.getLogDTO());
+}</code></pre><p id="1876fc4e-b78a-8087-994b-ec87eefe40d3" class="">   👉 <code>pahse</code>속성</p><ul id="1876fc4e-b78a-8013-ba07-d0e3ec1d1b76" class="bulleted-list"><li style="list-style-type:disc"><strong>AFTER_COMMIT (기본값)</strong> - 트랜잭션이 성공적으로 마무리(commit)됬을 때 이벤트 실행</li></ul><ul id="1876fc4e-b78a-8013-ab7c-f64b3f0c7ca0" class="bulleted-list"><li style="list-style-type:disc">AFTER_ROLLBACK – 트랜잭션이 rollback 되었을 때 이벤트 실행</li></ul><ul id="1876fc4e-b78a-8003-96ef-d57cf4940635" class="bulleted-list"><li style="list-style-type:disc">AFTER_COMPLETION – 트랜잭션이 마무리 되었을 때(commit or rollback) 이벤트 실행</li></ul><ul id="1876fc4e-b78a-8050-b3ee-e28c6bf3fd3e" class="bulleted-list"><li style="list-style-type:disc">BEFORE_COMMIT - 트랜잭션의 커밋 전에 이벤트 실행</li></ul><p id="1876fc4e-b78a-80ce-977f-d6e1430e35d9" class="">
+</p><p id="1876fc4e-b78a-80a8-95cc-cd695534b409" class=""><strong> ▶️ 실행결과</strong></p><figure id="1876fc4e-b78a-8037-bab1-ee6671ba3b9e" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2010.png"><img style="width:604.984375px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2010.png"/></a></figure><p id="1876fc4e-b78a-801a-ba79-e56e0bddaff1" class=""><strong>🔍 DB저장 결과</strong></p><figure id="1876fc4e-b78a-80d9-9d84-ef4916427843" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2011.png"><img style="width:528px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2011.png"/></a></figure><ul id="1876fc4e-b78a-8065-9f4d-e582b01612e7" class="bulleted-list"><li style="list-style-type:disc">테스트 1의 로그와 비슷해 보이지만, 특이점은 OrderService가 종료되고 이벤트 서비스가 실행됩니다.</li></ul><ul id="1876fc4e-b78a-80b6-b381-f0f88910af68" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-red">또 하나 주의할 점은 분명 LogService에서 별 에러없이 로그저장이 완료 되었는데, 실제 DB에는 반영되지 않았습니다.</mark></li></ul><h3 id="1876fc4e-b78a-8077-a9c0-d85086b62291" class="">🤔 에러가 없는데 왜 로그는 저장되지 않았을까?</h3><ul id="1876fc4e-b78a-801b-b5b9-c19a346f20ef" class="bulleted-list"><li style="list-style-type:disc">이유는 Hibernate의 영속성 컨텍스트와 스프링의 <code>@Transactional</code> 동작 원리 때문에 그렇습니다.</li></ul><ul id="1876fc4e-b78a-8058-b7c1-fa978e0cf0f3" class="bulleted-list"><li style="list-style-type:disc">Hibernate의 영속성 컨텍스트는 Commit시점에 1차 캐시에 저장된 SnapShot과 엔티티 객체를 비교하여 변경이 감지되면 Database에 영구 반영합니다.</li></ul><ul id="1876fc4e-b78a-808d-960b-f186177856fc" class="bulleted-list"><li style="list-style-type:disc"><code>@Transactional</code>의 기본 전파옵션인 <code>Propagation.</code><em><code>REQUIRED</code></em>는 최초 생성된 트랜잭션이 부모 트랜잭션이 되고 그 이하로 생성되는 모든 자식 트랜잭션들은 부모 트랜잭션에 종속하게 됩니다.<br/>때문에 부모 트랜잭션에서 commit이 일어나고 나면 이후 자식 트랜잭션에서는 추가적인 커밋작업은 이루어지지 않습니다.<br/></li></ul><h3 id="1876fc4e-b78a-803d-b038-dae1e02263e7" class="">👍 그렇다면 테스트 2처럼 <code>@Async</code>를 붙여야 할까?</h3><ul id="1876fc4e-b78a-80ba-81d5-fa73e7699bfd" class="bulleted-list"><li style="list-style-type:disc">반은 맞고 반은 틀린 얘기입니다. 즉 정해진 답은 없습니다. <mark class="highlight-gray_background">(테스트3 결과 정리에서 이야기 하겠습니다.)</mark></li></ul><ul id="1876fc4e-b78a-80b7-b11e-fef3a610c41c" class="bulleted-list"><li style="list-style-type:disc"><code>@Async</code>를 붙이지 않더라도 로그등록 서비스의 전파옵션(자식 트랜잭션)을  아래와 같이 변경해도 해결 가능합니다.</li></ul><ul id="1876fc4e-b78a-805b-a955-c8eca8018521" class="bulleted-list"><li style="list-style-type:disc"><code>log</code> &gt; LogService.java </li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-80a1-ac8a-ed44766c9ba2" class="code"><code class="language-Java" style="white-space:pre-wrap;word-break:break-all">@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void registerLog(LogDTO logDTO) {
+    ...
+}</code></pre><ul id="1876fc4e-b78a-809d-80c1-f8045a013a98" class="bulleted-list"><li style="list-style-type:disc">해당 전파옵션은 새로운 트랜잭션을 열겠다는 뜻입니다.</li></ul><h3 id="1876fc4e-b78a-801c-a0fb-e6095efa5c6f" class=""> 👉 흠.. 그럼 우선 <code>@Async</code>없이 전파옵션만 변경해서 테스트 해보겠습니다.</h3><p id="1876fc4e-b78a-80bf-97fc-fe9ed232957e" class=""><strong> ▶️ 실행결과</strong></p><figure id="1876fc4e-b78a-8075-8cd3-d110529a7379" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2010.png"><img style="width:604.984375px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2010.png"/></a></figure><p id="1876fc4e-b78a-80d4-a9f0-e76b366e8caf" class=""><strong>🔍 DB저장 결과 </strong></p><figure id="1876fc4e-b78a-8084-870a-f11b6f9f6911" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2012.png"><img style="width:480px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2012.png"/></a></figure><ul id="1876fc4e-b78a-80da-95f6-da531e07ec83" class="bulleted-list"><li style="list-style-type:disc">전파옵션만 바꾸었기 때문에 로그상으로는 달라진건 없습니다.</li></ul><ul id="1876fc4e-b78a-80e9-a9e9-ede2a623c16c" class="bulleted-list"><li style="list-style-type:disc">단, 드디어 두 테이블 모두 데이터가 들어간걸 확인 할 수 있습니다.</li></ul><h3 id="1876fc4e-b78a-80d6-9d91-c384dd46aec1" class="">🤔 롤백테스트 또 할꺼야?</h3><ul id="1876fc4e-b78a-8034-bae8-f662aceb1e0c" class="bulleted-list"><li style="list-style-type:disc">테스트는 해보았지만 결과만 말씀드리고 스크린샷은 생략하겠습니다..(점점 서사시 되고있음..)</li></ul><p id="1876fc4e-b78a-80aa-bac9-c0cdfa9179ad" class=""><br/>  <br/><strong>테스트1): </strong>주문등록 에러발생 &gt; 호출서비스가 커밋되지 않았기 때문에 이벤트 자체가 호출되지 않습니다.<br/><br/>  <br/><strong>테스트2): </strong>로그등록 에러발생 &gt; 새로운 트랜잭션을 열었기 때문에 주문정보는 롤백되지 않습니다.</p><h2 id="1876fc4e-b78a-80fd-ba97-df5043cbb9ad" class="">🎯 테스트3 결과 정리</h2><ul id="1876fc4e-b78a-8039-b9a9-cedae5961c53" class="bulleted-list"><li style="list-style-type:disc"><code>@TransactionalEventListener</code>만 사용할 경우 동일 스레드로 동작합니다.</li></ul><ul id="1876fc4e-b78a-803f-b07b-e137f71c6b1e" class="bulleted-list"><li style="list-style-type:disc">또한 <code>pahse</code> 속성값 지정을 통해 호출 서비스의 커밋 전, 후를 완벽히 보장 받습니다.</li></ul><ul id="1876fc4e-b78a-8030-ae3e-c13b16747584" class="bulleted-list"><li style="list-style-type:disc">주의할 점은 Hibernate와 같은 영속성 컨텍스트를 사용하는 JPA환경에서는 이벤트 수신시 수행되는 서비스에서 DB상태를 변경할 때 항상 트랜잭션에 대한 주의가 필요합니다.</li></ul><ul id="1876fc4e-b78a-800a-b557-c0608f754451" class="bulleted-list"><li style="list-style-type:disc">본 시나리오 상에서 의미를 찾자면, <mark class="highlight-blue_background"><strong>[로그 테이블 기록시 에러가 나더라도 주문완료는 보존되어야 한다.]</strong></mark>라는 가정하에 <strong>안전하게! </strong>사용될 수 있는 어노테이션 입니다.</li></ul><ul id="1876fc4e-b78a-80ee-8a5a-f9bf413f78d9" class="bulleted-list"><li style="list-style-type:disc">다음 테스트에서 진행하겠지만, 전파옵션을 <em><code>REQUIRES_NEW</code></em><em> 로 변경하지 않고 </em><br/><br/><code>@Async</code>를 붙여도 겉보기엔 같은 결과를 보입니다. 그럼 뭘 써야할까요??<br/><br/>정해진 답은 없습니다. <br/><strong>비즈니스적인 관점</strong>에서는 두 가지는 모두 같은 결과를 보입니다.<br/>단 성능적인 측면 혹은 다른 관점에서 바라본다면 그나마 쉽게 선택 할 수 있습니다.<br/><br/>1) 만약 이벤트까지 완벽히 처리된 후 API결과를 응답해야 한다면 전파옵션을 <br/><em><code>REQUIRES_NEW</code></em><em>로 변경<br/><br/>2) <br/></em>이벤트 처리결과는 딱히 중요하지 않다면 <code>@Async</code>를 사용하여 더 빠르게 응답<br/><br/>3) 혹은 Loop에서 다량의 이벤트를 전파해야하고 이 이벤트가 순차적으로 처리될 필요가 없을때<br/>    <br/><code>@Async</code>를 사용해 효율적인 멀티스레드 처리가 가능</li></ul><p id="1876fc4e-b78a-800f-b23a-cd7b360393fe" class="">
+</p><ul id="1876fc4e-b78a-80e6-af12-e9da2816c2da" class="bulleted-list"><li style="list-style-type:disc">때문에 실전 적용 사례로는 <mark class="highlight-blue"><strong>이벤트 수신 시 실행되는 서비스가 호출되는 서비스의 커밋 전, 후 상태를 완벽히 보장받아야 하며 동기적으로 결과를 리턴해야 할 때</strong></mark> 사용하면 됩니다.</li></ul></details></li></ul><p id="1876fc4e-b78a-8032-9f76-f5af63543be4" class="">
+</p><h2 id="1876fc4e-b78a-8016-a16b-dca3a3d740e1" class="">👨🏻‍🔬 테스트 4</h2><ul id="1876fc4e-b78a-8048-94b5-d257e5dfd102" class="toggle"><li><details open=""><summary><code>@TransactionalEventListener</code> + <code>@Async</code> 사용하는 경우</summary><ul id="1876fc4e-b78a-80af-963f-da3359b272ce" class="bulleted-list"><li style="list-style-type:disc"><code>log</code> &gt; LogEventListener.java </li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-80b7-a550-f9c66fa48259" class="code"><code class="language-Java">@Async
+@TransactionalEventListener(phase = AFTER_COMMIT)
+public void registerLog(LogDTO logDTO) {
+    logService.registerLog(event.getLogDTO());
+}</code></pre><ul id="1876fc4e-b78a-804c-9f4f-dc6c6042a232" class="bulleted-list"><li style="list-style-type:disc"><code>log</code> &gt; LogService.java </li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1876fc4e-b78a-8033-8ff0-fbca3005a82b" class="code"><code class="language-Java" style="white-space:pre-wrap;word-break:break-all">@Transactional
+public void registerLog(LogDTO logDTO) {
+    ...
+}</code></pre><p id="1876fc4e-b78a-8026-a28d-c87e4ce905b5" class=""> <em><mark class="highlight-gray">(Propagation.REQUIRES_NEW 전파옵션 다시 제거)</mark></em></p><p id="1876fc4e-b78a-80ef-89ae-f8cd2cdca654" class="">
+</p><p id="1876fc4e-b78a-8088-b4a0-e5ca7fc30bad" class=""><strong>▶️ 실행결과</strong></p><figure id="1876fc4e-b78a-80e4-88e4-f8932e01850a" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2013.png"><img style="width:1600px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2013.png"/></a></figure><p id="1876fc4e-b78a-800f-ac31-fe8a85b93ed0" class=""><strong>🔍 DB저장 결과</strong></p><figure id="1876fc4e-b78a-80fd-b555-d95f0bba0ea5" class="image"><a href="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2012.png"><img style="width:480px" src="TransactionalEventListener%20+%20Async%201876fc4eb78a80328482e68c45b1eaf0/Untitled%2012.png"/></a></figure><ul id="1876fc4e-b78a-80c5-add6-fe5aca5a6c1b" class="bulleted-list"><li style="list-style-type:disc">테스트 2(<code>@EventListener</code> + <code>@Async</code>)의 로그와 동일하게 다른 스레드로 실행되고, 이벤트 처리결과를 기다리지 않고 바로 API를 응답합니다.</li></ul><ul id="1876fc4e-b78a-8009-9757-ec45f900f076" class="bulleted-list"><li style="list-style-type:disc">단! 주의할 점은 <mark class="highlight-orange">테스트 2의 경우 앞서 설명했듯이 이벤트 발행 순간에 이벤트 서비스가 즉시 실행</mark>된 경우고, <mark class="highlight-orange">본 테스트의 경우에는 호출 서비스가 완벽히 종료된 후, 즉 Commit이 완료된 시점</mark>에 이벤트 서비스가 실행된 경우입니다. </li></ul><ul id="1876fc4e-b78a-8069-8b59-eb2131f86fc9" class="bulleted-list"><li style="list-style-type:disc">DB 역시도 다른 스레드의 다른 트랜잭션이 적용되어 영속성 컨택스트 캐시 문제와는 상관없이 주문, 로그 모두 저장됩니다.</li></ul><h3 id="1876fc4e-b78a-8008-829a-f6e4da62f83d" class="">🤔 롤백테스트 !?</h3><ul id="1876fc4e-b78a-808a-bd15-dcb62d2ffa57" class="bulleted-list"><li style="list-style-type:disc">이번에도 역시 테스트는 해보았지만 결과만 말씀드리겠습니다.</li></ul><p id="1876fc4e-b78a-8067-950f-c9f4e4bf99ff" class=""><br/>  <br/><strong>테스트1): </strong>주문등록 에러발생 &gt; 호출서비스가 커밋되지 않았기 때문에 이벤트 자체가 호출되지 않습니다.<br/><br/>  <br/><strong>테스트2): </strong>로그등록 에러발생 &gt; 비동기로 새로운 트랜잭션을 열었기 때문에 주문정보는 롤백되지 않습니다.</p><h2 id="1876fc4e-b78a-80c7-9389-cacfabe4b148" class="">🎯 테스트4 결과 정리</h2><ul id="1876fc4e-b78a-8026-b0d5-d76b49699962" class="bulleted-list"><li style="list-style-type:disc"><code>@TransactionalEventListener</code> + <code>@Async</code>를 사용할 경우 다른 스레드로 동작합니다.</li></ul><ul id="1876fc4e-b78a-80f1-8459-e33df7a0346a" class="bulleted-list"><li style="list-style-type:disc"><code>pahse</code> 속성값 지정을 통해 호출 서비스의 커밋 전, 후를 완벽히 보장 받습니다.</li></ul><ul id="1876fc4e-b78a-80b2-a3c7-fd64cd596c59" class="bulleted-list"><li style="list-style-type:disc"><code>@TransactionalEventListener</code>만 사용했을 때와는 달리 다른 스레드로 동작하기 때문에 트랜잭션 역시 새로 열리게 됩니다. 때문에 영속성 컨택스트 캐시에 대한 별 다른 주의가 필요 없습니다.</li></ul><ul id="1876fc4e-b78a-807f-ac40-f4866a5a3e4a" class="bulleted-list"><li style="list-style-type:disc">본 시나리오 상에서 의미를 찾자면, <mark class="highlight-blue_background"><strong>[로그 테이블 기록시 에러가 나더라도 주문완료는 보존되어야 한다.]</strong></mark>라는 가정하에 <strong>안전하면서 효율적으로! </strong>사용될 수 있는 어노테이션 입니다.</li></ul><ul id="1876fc4e-b78a-804d-b227-da02c42e2d31" class="bulleted-list"><li style="list-style-type:disc">현 시나리오 상 테스트 3(<code>@TransactionalEventListener</code>만 사용)이나 본 테스트나 롤백 테스트를 포함해서 결과적인 차이는 없습니다. </li></ul><ul id="1876fc4e-b78a-8048-80e1-f22ad3852a26" class="bulleted-list"><li style="list-style-type:disc">다만 내부적으로 이벤트 서비스를 비동기 스레드로 처리하고, 이벤트가 처리되는 동안 호출 서비스를 NonBlocking하기 때문에 자원을 효율적으로 사용할 수 있고, Client에게 빠르게 응답 할 수 있습니다.</li></ul><ul id="1876fc4e-b78a-8083-84d3-d4b9e096057b" class="bulleted-list"><li style="list-style-type:disc">정리하자면 실전 적용 사례로는 <mark class="highlight-blue"><strong>이벤트 수신 시 실행되는 서비스가 호출되는 서비스의 커밋 전, 후 상태를 완벽히 보장받아야 하지만, 이벤트 결과를 동기적으로 리턴할 필요가 없을 때</strong></mark> 사용하면 됩니다.</li></ul></details></li></ul><p id="1876fc4e-b78a-803e-9505-f9ec3267eeda" class="">
+</p><h2 id="1876fc4e-b78a-8016-b09b-ea9250b6b2aa" class="">📝 테스트 결과 정리</h2><table id="1876fc4e-b78a-8095-bf73-d8cbe8f52bd4" class="simple-table"><thead class="simple-table-header"><tr id="1876fc4e-b78a-80b0-bae0-f3990e90260d"><th id="eExn" class="block-color-default simple-table-header" style="width:67.59375px"></th><th id="WH[H" class="simple-table-header-color simple-table-header" style="width:139.6px"><br/><br/><code>@EventListener</code></th><th id="_crS" class="simple-table-header-color simple-table-header" style="width:192.59375px"><code>@Async</code><br/><br/><code>@EventListener</code></th><th id="eLVM" class="simple-table-header-color simple-table-header" style="width:223.59375px"><br/><br/><code>@TransactionalEventListener</code> </th><th id="y`Hf" class="simple-table-header-color simple-table-header" style="width:234.59375px"><code>@Async</code><br/><br/><code>@TransactionalEventListener</code></th></tr></thead><tbody><tr id="1876fc4e-b78a-80d9-90e4-def52d89f03d"><td id="eExn" class="block-color-default" style="width:67.59375px">스레드</td><td id="WH[H" class="" style="width:139.6px">Single</td><td id="_crS" class="" style="width:192.59375px">Multi</td><td id="eLVM" class="" style="width:223.59375px">Single</td><td id="y`Hf" class="" style="width:234.59375px">Multi</td></tr><tr id="1876fc4e-b78a-80e4-b3f3-d7e527ac7b30"><td id="eExn" class="block-color-default" style="width:67.59375px">트랜잭션</td><td id="WH[H" class="" style="width:139.6px">Same</td><td id="_crS" class="" style="width:192.59375px">Another</td><td id="eLVM" class="" style="width:223.59375px">Another<br/><br/><em><mark class="highlight-gray_background">* 단! JPA에서는 전파옵션 주의</mark></em></td><td id="y`Hf" class="" style="width:234.59375px">Another</td></tr><tr id="1876fc4e-b78a-8007-938f-fd549c70b103"><td id="eExn" class="block-color-default" style="width:67.59375px">사용<br/>예시<br/></td><td id="WH[H" class="" style="width:139.6px"><mark class="highlight-blue"><strong>서비스와 이벤트가 <br/>같은 트랜잭션으로 <br/>엮여야 할 때 사용<br/></strong></mark></td><td id="_crS" class="" style="width:192.59375px"><mark class="highlight-blue"><strong>서비스와 이벤트가 같은 트랜잭션으로 엮이면 안될 때 사용할 수 있으나 서비스의 커밋 전, 후 상태를 보장받지 못함! </strong></mark></td><td id="eLVM" class="" style="width:223.59375px"><mark class="highlight-blue"><strong>이벤트가 서비스의 커밋 전, 후 상태를 <br/>보장받아야 하며 동기적으로 결과를 <br/>리턴해야 할 때 사용<br/>(+ 다른 트랜잭션)<br/></strong></mark></td><td id="y`Hf" class="" style="width:234.59375px"><mark class="highlight-blue"><strong>이벤트가 서비스의 커밋 전, 후 상태를 <br/>보장받아야 하지만, 이벤트 결과를  <br/>동기적으로 리턴할 필요가 없을 때 사용<br/>(+ 다른 트랜잭션)<br/></strong></mark></td></tr></tbody></table><p id="1876fc4e-b78a-80c3-83ab-d21a13d37ba3" class="">
+</p><h2 id="1876fc4e-b78a-80d6-bd55-eb50612599c6" class="">🎬 마무리..</h2><ul id="1876fc4e-b78a-80c7-b3a0-ef32fe4aa3e3" class="bulleted-list"><li style="list-style-type:disc">단순하게 생각한다면, 업무 도메인 내에서는 트랜잭션을 엮어야 하는 경우가 많기 때문에 <code>@EventListene</code>만 사용할 듯 싶습니다. <br/><br/></li></ul><ul id="1876fc4e-b78a-8006-b35d-eea80ee087b8" class="bulleted-list"><li style="list-style-type:disc">단, 외부 I/F 호출이나 이메일 발송, SMS 발송, 슬랙 전송 등 본 서비스가 완료된 후 부가적인 기능을 이벤트로 호출할 때에는<code>@TransactionalEventListener</code> + <code>@Async</code> 조합을 사용하여 본 서비스의 비즈니스 흐름에 영향을 주지 않으면서 조금더 빠르고 효율적으로 처리할 수 있게 하는것이 좋아보입니다.<br/><br/></li></ul><ul id="1876fc4e-b78a-804d-ac83-ec825f33e7c2" class="bulleted-list"><li style="list-style-type:disc">워낙에 다양한 요구사항들이 존재하고 상황들이 다르기 때문에 사용 예시를 정의하는것이 많이 어려웠습니다. 때문에 이 글을 참조하여 SpringEvent를 개발할 때에는 <mark class="highlight-blue_background"><strong>결과 정리의 [사용예시]를 참조하기 보다는 그 외에 스레드와 트랜잭션에 어떻게 동작하는지를 중점</strong></mark>으로 봐주셨음 좋겠습니다.<br/><br/></li></ul><ul id="1876fc4e-b78a-80c7-b599-f5fc0baa3a58" class="bulleted-list"><li style="list-style-type:disc">추가로 정정해야 할 부분이 있다면 자유롭게 수정해주시면 감사하겠습니다.<br/><br/></li></ul><p id="1876fc4e-b78a-80d8-8630-daa8102c3fcf" class="">
+</p><p id="1876fc4e-b78a-8083-8a36-ebcfcc3b5e9a" class="">
+</p><p id="1876fc4e-b78a-8031-81a6-f0cb018fe783" class="">[참고문서]</p><p id="1876fc4e-b78a-809f-acdf-cb38a5a6cec8" class=""><a href="https://jeong-pro.tistory.com/187">async 비동기 처리 문서</a></p><p id="1876fc4e-b78a-8063-9ac0-f28fdbb5fec6" class=""><a href="https://velog.io/@gillog/Spring-Async-Annotation%EB%B9%84%EB%8F%99%EA%B8%B0-%EB%A9%94%EC%86%8C%EB%93%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0">async 주의사항</a></p><p id="1876fc4e-b78a-80ff-a542-c39f42d2da02" class=""><a href="https://devlog-wjdrbs96.tistory.com/424">Transctional 전파옵션</a></p><p id="1876fc4e-b78a-807a-89f5-cc29841e2189" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
